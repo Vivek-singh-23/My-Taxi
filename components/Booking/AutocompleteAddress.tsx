@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { DestinationCoordinatesContext } from "@/context/DestinationCoordinatesContext";
+import { SourceCoordinatesContext } from "@/context/SourceCoordinatesContext";
+import React, { useContext, useEffect, useState } from "react";
+const session_token=''
+const MAPBOX_RETRIVE_URL='https://api.mapbox.com/search/searchbox/v1/retrieve/'
 
 function AutocompleteAddress() {
   const [source, setSource] = useState<any>();
   const [destination, setDestination] = useState<any>();
   const [addressList, setAddressList] = useState<any>([]);
   const [destinationList, setDestinationList] = useState<any>([]);
+  const {sourceCoordinates,setSourceCoordinates} = useContext(SourceCoordinatesContext)
+  const {destinationCoordinates,setDestinationCoordinates} = useContext(DestinationCoordinatesContext)
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -44,6 +50,31 @@ function AutocompleteAddress() {
     setDestinationList(result);
   };
 
+  const onSourceAddressClick = async(item:any) => {
+    setSource(item.full_address);
+    setAddressList([]);
+    const res=await fetch(MAPBOX_RETRIVE_URL+item.mapbox_id+"?session_token="+session_token+"&access_token="+process.env.MAPBOX_ACCESS_TOKEN)
+
+    const result=await res.json()
+    setSourceCoordinates({
+        lng: result.features[0].geometry.coordinates[0],
+        lat: result.features[0].geometry.coordinates[1],
+      });
+      
+  };
+
+  const onDestinationAddressClick = async(item:any) => {
+    setDestination(item.full_address);
+    setAddressList([]);
+    const res=await fetch(MAPBOX_RETRIVE_URL+item.mapbox_id+"?session_token="+session_token+"&access_token="+process.env.MAPBOX_ACCESS_TOKEN)
+
+    const result=await res.json()
+    setDestinationCoordinates({
+        lng: result.features[0].geometry.coordinates[0],
+        lat: result.features[0].geometry.coordinates[1],
+      });
+  };
+
   return (
     <div className="mt-5">
       <div className="relative">
@@ -60,10 +91,7 @@ function AutocompleteAddress() {
           {addressList?.suggestions.map((item: any, index: number) => (
             <h2
               className="p-3 hover:bg-gray-100 cursor-pointer"
-              onClick={() => {
-                setSource(item.full_address);
-                setAddressList([]);
-              }}
+              onClick={() => onSourceAddressClick(item)}
               key={index}
             >
               {item.full_address}
@@ -86,9 +114,7 @@ function AutocompleteAddress() {
           {destinationList?.suggestions.map((item: any, index: number) => (
             <h2
               className="p-3 hover:bg-gray-100 cursor-pointer"
-              onClick={() => {
-                setDestination(item.full_address);
-                setDestinationList([]);
+              onClick={() =>{onDestinationAddressClick(item)
               }}
               key={index}
             >

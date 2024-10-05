@@ -1,5 +1,6 @@
 "use client";
 import { DirectionDataContext } from "@/context/DirectionDataContext";
+import { SelectedCarAmountContext } from "@/context/SelectedCarAmountContext";
 import CarsList from "@/data/CarsList";
 import Image from "next/image";
 import React, { useContext, useState } from "react";
@@ -7,11 +8,13 @@ import React, { useContext, useState } from "react";
 function Cars() {
   const [selectedCar, setSelectedCar] = useState<any>();
   const {directionData, setDirectionData} = useContext(DirectionDataContext)
-
+  const {carAmount, setCarAmount} = useContext(SelectedCarAmountContext)
 
   const getCost=(charges:any)=>{
     return (charges*directionData.routes[0].distance*0.000621371192).toFixed(2);
   }
+
+
 
   return (
     <div className="mt-3">
@@ -20,7 +23,9 @@ function Cars() {
         {CarsList.map((item, index) => (
           <div
             key={index}
-            onClick={() => setSelectedCar(index)}
+            onClick={() => {setSelectedCar(index);
+              setCarAmount(getCost(item.charges))
+            }}
             className={`m-2 p-2 border-[2px] rounded-md hover:border-yellow-400 cursor-pointer ${
               index == selectedCar ? "border-yellow-400" : null
             }`}

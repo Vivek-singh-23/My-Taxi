@@ -1,4 +1,5 @@
 import Booking from "@/components/Booking/Booking";
+import MapBoxMap from "@/components/Map/MapBoxMap";
 import Image from "next/image";
 
 export default function Home() {
@@ -10,7 +11,7 @@ export default function Home() {
         </div>
 
         <div className="col-span-2 bg-red-100 ">
-          map
+          <MapBoxMap/>
         </div>
       </div>
    </div>

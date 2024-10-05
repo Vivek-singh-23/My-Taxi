@@ -1,7 +1,7 @@
 import { DestinationCoordinatesContext } from "@/context/DestinationCoordinatesContext";
 import { SourceCoordinatesContext } from "@/context/SourceCoordinatesContext";
 import React, { useContext, useEffect, useState } from "react";
-const session_token=''
+const session_token='add your session token here'
 const MAPBOX_RETRIVE_URL='https://api.mapbox.com/search/searchbox/v1/retrieve/'
 
 function AutocompleteAddress() {

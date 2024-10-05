@@ -12,8 +12,8 @@ import DistanceTime from "./DistanceTime";
 
 const MAPBOX_DRIVING_ENDPOINT =
   "https://api.mapbox.com/directions/v5/mapbox/driving/";
-// paste your session token here
-const session_token = "";
+
+const session_token = "add your session token here";
 
 function MapBoxMap() {
   const mapRef = useRef<any>();

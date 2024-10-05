@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext } from "react";
-
 import { UserLocationContext } from "@/context/UserLocationContext";
 import { Marker } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";

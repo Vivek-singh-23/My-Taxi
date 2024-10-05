@@ -2,58 +2,74 @@
 import { UserLocationContext } from "@/context/UserLocationContext";
 import React, { useContext, useEffect, useRef } from "react";
 import Map, { Marker } from "react-map-gl";
-import 'mapbox-gl/dist/mapbox-gl.css';
+import "mapbox-gl/dist/mapbox-gl.css";
 import Markers from "./Markers";
 import { SourceCoordinatesContext } from "@/context/SourceCoordinatesContext";
 import { DestinationCoordinatesContext } from "@/context/DestinationCoordinatesContext";
 import { DirectionDataContext } from "@/context/DirectionDataContext";
 import MapBoxRoute from "./MapBoxRoute";
+import DistanceTime from "./DistanceTime";
 
-const MAPBOX_DRIVING_ENDPOINT="https://api.mapbox.com/directions/v5/mapbox/driving/"
+const MAPBOX_DRIVING_ENDPOINT =
+  "https://api.mapbox.com/directions/v5/mapbox/driving/";
 // paste your session token here
-const session_token=""
-
+const session_token = "";
 
 function MapBoxMap() {
-  const mapRef=useRef<any>()
+  const mapRef = useRef<any>();
   const { userLocation, setUserLocation } = useContext(UserLocationContext);
-  const {sourceCoordinates,setSourceCoordinates} = useContext(SourceCoordinatesContext)
-  const {destinationCoordinates,setDestinationCoordinates} = useContext(DestinationCoordinatesContext)
-  const {directionData, setDirectionData} = useContext(DirectionDataContext)
+  const { sourceCoordinates, setSourceCoordinates } = useContext(
+    SourceCoordinatesContext
+  );
+  const { destinationCoordinates, setDestinationCoordinates } = useContext(
+    DestinationCoordinatesContext
+  );
+  const { directionData, setDirectionData } = useContext(DirectionDataContext);
   useEffect(() => {
-    if(sourceCoordinates){
+    if (sourceCoordinates) {
       mapRef.current?.flyTo({
-        center:[sourceCoordinates.lng,sourceCoordinates.lat],
-        duration:2500
-      })
+        center: [sourceCoordinates.lng, sourceCoordinates.lat],
+        duration: 2500,
+      });
     }
-  }, [sourceCoordinates])
+  }, [sourceCoordinates]);
 
   useEffect(() => {
-    if(destinationCoordinates){
+    if (destinationCoordinates) {
       mapRef.current?.flyTo({
-        center:[destinationCoordinates.lng,destinationCoordinates.lat],
-        duration:2500
-      })
+        center: [destinationCoordinates.lng, destinationCoordinates.lat],
+        duration: 2500,
+      });
     }
 
-    if(sourceCoordinates&&destinationCoordinates){
+    if (sourceCoordinates && destinationCoordinates) {
       getDirectionRoute();
     }
-  }, [destinationCoordinates])
-  
+  }, [destinationCoordinates]);
 
-  const getDirectionRoute=async()=>{
-    const res=await fetch(MAPBOX_DRIVING_ENDPOINT+sourceCoordinates.lng+","+sourceCoordinates.lat+";"+destinationCoordinates.lng+","
-      +destinationCoordinates.lat+"?overview=full&geometries=geojson"+"&access_token="+process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,{
-        headers:{
-          "Content-Type":"application/json"
-        }
-      });
+  const getDirectionRoute = async () => {
+    const res = await fetch(
+      MAPBOX_DRIVING_ENDPOINT +
+        sourceCoordinates.lng +
+        "," +
+        sourceCoordinates.lat +
+        ";" +
+        destinationCoordinates.lng +
+        "," +
+        destinationCoordinates.lat +
+        "?overview=full&geometries=geojson" +
+        "&access_token=" +
+        process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-      const result=await res.json();
-      setDirectionData(result)
-  }
+    const result = await res.json();
+    setDirectionData(result);
+  };
 
   return (
     <div className="p-5">
@@ -71,16 +87,19 @@ function MapBoxMap() {
             }}
             style={{ width: "100%", height: 450, borderRadius: 10 }}
             mapStyle="mapbox://styles/mapbox/streets-v9"
-          > 
+          >
+            <Markers />
 
-            
-            <Markers/>
-
-            {directionData?.routes?(
-              <MapBoxRoute coordinates={directionData?.routes[0]?.geometry?.coordinates}/>
-            ):null}
+            {directionData?.routes ? (
+              <MapBoxRoute
+                coordinates={directionData?.routes[0]?.geometry?.coordinates}
+              />
+            ) : null}
           </Map>
         ) : null}
+      </div>
+      <div className="absolute bottom-[100px] z-20 right-[20px] hidden md:block">
+        <DistanceTime />
       </div>
     </div>
   );
